@@ -1,0 +1,60 @@
+@startuml c4_level1_context
+' RapidMed: system context diagram (C4 Level 1)
+' CSE4203 Principles of Software Architecture, Milestone 1, Section 3.
+' Render:  java -jar plantuml.jar -tpng c4_level1_context.puml
+' Uses the C4-PlantUML library that ships with PlantUML (!include <C4/...>).
+
+' Narrower boxes and labels, with larger text, so the diagram stays legible at A4 text width
+!$DEFAULT_WRAP_WIDTH = 132
+!$REL_DESCR_MAX_CHAR_WIDTH = 17
+!$REL_TECHN_MAX_CHAR_WIDTH = 18
+!$ARROW_FONT_SIZE = 15
+!$TECHN_FONT_SIZE = 14
+
+!include <C4/C4_Context>
+
+skinparam defaultFontName "Liberation Sans"
+skinparam defaultFontSize 16
+skinparam titleFontSize 20
+skinparam dpi 300
+LAYOUT_LEFT_RIGHT()
+HIDE_STEREOTYPE()
+
+title System context diagram for RapidMed (C4 Level 1)
+
+' ---------- people (users) ----------
+Person(paramedic, "Field paramedic", "Records vital signs and triage level and takes the patient to the suggested hospital", $type="Person")
+Person(coordinator, "Hospital triage coordinator", "Keeps the emergency department's bed availability up to date; prepares for incoming patients", $type="Person")
+Person(supervisor, "Central dispatch supervisor", "Monitors ambulances and hospital capacity and can override routing", $type="Person")
+
+' ---------- the system in scope ----------
+System(rapidmed, "RapidMed", "Matches each patient to a hospital with a free bed, reserves the bed and sends the patient's details ahead", $type="Software system")
+
+' ---------- external systems ----------
+System_Ext(routes, "Google Routes API", "Traffic-aware travel times and routes (Google Maps Platform)", $type="External system")
+System_Ext(phdms, "Sanad PHDMS (FHIR mock)", "Patient health data management system; a mock of its HL7 FHIR R4 interface stands in for it", $type="External system")
+System_Ext(fcm, "Firebase Cloud Messaging", "Delivers push notifications to Android, iOS and web apps", $type="External system")
+
+' ---------- relationships (arrow starts at the element that starts the interaction) ----------
+Rel(paramedic, rapidmed, "Records vitals, requests a destination, reads patient summaries", "ambulance computer, HTTPS")
+Rel(coordinator, rapidmed, "Updates bed availability, accepts incoming patients", "web browser, HTTPS")
+Rel(supervisor, rapidmed, "Monitors fleet and capacity, overrides routing", "web browser, HTTPS")
+
+Rel(rapidmed, routes, "Gets traffic-aware travel times and routes", "HTTPS, JSON")
+Rel(rapidmed, phdms, "Reads patient summaries", "FHIR R4 REST, JSON")
+Rel(rapidmed, fcm, "Pushes alerts to ambulance computers and the portal", "HTTPS")
+
+' ---------- legend (written out so that every symbol is explained) ----------
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendBorderColor #8C8C8C
+skinparam LegendFontColor #222222
+skinparam LegendFontSize 15
+
+legend bottom left
+<b><size:16>Legend</size></b>
+<#FFFFFF,#BFBFBF>|<#08427B><color:#FFFFFF><b> Person </b></color>| A user role that works with RapidMed |
+|<#1168BD><color:#FFFFFF><b> Software system </b></color>| The system in scope, shown as a single box |
+|<#999999><color:#FFFFFF><b> External system </b></color>| A software system outside RapidMed's boundary |
+|<size:26>  →</size>| Relationship, drawn from the element that starts the interaction; label: purpose [technology] |
+endlegend
+@enduml

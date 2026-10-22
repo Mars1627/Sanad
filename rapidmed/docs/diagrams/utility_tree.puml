@@ -1,0 +1,68 @@
+@startmindmap utility_tree
+' RapidMed: utility tree of quality attribute scenarios
+' CSE4203 Principles of Software Architecture, Milestone 1, Section 7.
+' Render:  java -jar plantuml.jar -tpng utility_tree.puml
+' Each leaf is rated (business value, architectural impact): H high, M medium, L low.
+' Orange leaves are the architecturally significant requirements (ASR-1 to ASR-5).
+
+skinparam dpi 300
+<style>
+mindmapDiagram {
+  title { FontName "Liberation Sans"; FontSize 20; FontStyle bold; Margin 4 }
+  node {
+    FontName "Liberation Sans"
+    FontSize 15
+    Padding 7
+    Margin 7
+    RoundCorner 10
+    BackgroundColor #FFFFFF
+    LineColor #8C8C8C
+    LineThickness 1.2
+    MaximumWidth 330
+  }
+  :depth(0) { BackgroundColor #1F4E79; FontColor #FFFFFF; FontStyle bold; FontSize 17 }
+  :depth(1) { BackgroundColor #E7EEF6; LineColor #1F4E79; FontStyle bold }
+  :depth(2) { BackgroundColor #F4F4F1 }
+  .asr { BackgroundColor #FCE4D6; LineColor #C55A11; LineThickness 1.8 }
+  arrow { LineColor #8C8C8C; LineThickness 1.2 }
+  legend { FontName "Liberation Sans"; FontSize 14; BackgroundColor #FFFFFF; LineColor #8C8C8C }
+}
+</style>
+
+title Utility tree for RapidMed
+
+* Utility
+** Consistency (safety)
+*** Bed reservation
+**** (H, H) QAS-4: two crews request the last bed; exactly one gets it, 0 double reservations in 1,000 runs <<asr>>
+** Availability
+*** Offline data entry
+**** (H, H) QAS-1: outages of up to 30 minutes; 0 entries lost, all on the server within 30 s of reconnecting <<asr>>
+*** External service failure
+**** (H, H) QAS-2: Routes API down; an estimated destination within 3 s for every request <<asr>>
+** Security
+*** Emergency access
+**** (H, H) QAS-5: break-glass summary within 3 s; every access audited, no record editable <<asr>>
+** Performance
+*** Peak load
+**** (H, H) QAS-3: 200 destination requests in 60 s; 95% answered within 3 s <<asr>>
+** Interoperability
+*** Sanad integration
+**** (M, H) QAS-6: never above 60 requests a minute; 100% valid FHIR R4 with user and reason <<asr>>
+** Usability
+*** Vital-signs entry
+**** (H, L) QAS-7: 8 of 10 new users record a full set within 60 s; SUS score of 68 or more
+** Modifiability
+*** Routing provider
+**** (M, M) QAS-8: new provider within 2 person-days, changing the adapter only
+
+legend bottom left
+<b>Legend</b>
+Dark blue: the root, overall utility
+Light blue: quality attribute
+Grey: refinement of the attribute
+White: scenario, rated (business value, architectural impact) as H high, M medium or L low
+Orange: scenario behind an architecturally significant requirement
+Lines run from a node to the nodes that refine it
+endlegend
+@endmindmap
